@@ -301,19 +301,18 @@ public class DBproject{
 		try {
 			int rowCount = esql.executeQuery("SELECT * FROM Doctor");
 			rowCount++;
-			String rowCount_string = String.valueOf(rowCount);
 			
-         		String query = "INSERT INTO Doctor VALUES (" + rowCount_string + ",\'";
+         		String query = "INSERT INTO Doctor VALUES (" + rowCount + ",\'";
 			
          		System.out.print("\tEnter name: ");
          		String input = in.readLine();
          		query += input;
-	 		query += ",\'";
+	 		query += "\',\'";
 			
 			System.out.print("\tEnter specialty: ");
          		input = in.readLine();
          		query += input;
-	 		query += ",";
+	 		query += "\',";
 			
 			System.out.print("\tEnter did: ");
          		input = in.readLine();
@@ -329,6 +328,13 @@ public class DBproject{
 	}
 
 	public static void AddPatient(DBproject esql) {//2
+		try {
+			int rowCount = esql.executeQuery("SELECT did FROM Doctor;");
+                	System.out.println ("total row(s): " + rowCount);
+		}
+		catch(Exception e) {
+                        System.err.println (e.getMessage());
+                }
 	}
 
 	public static void AddAppointment(DBproject esql) {//3
