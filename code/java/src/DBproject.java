@@ -168,7 +168,7 @@ public class DBproject{
 		int rowCount = 0;
 
 		//iterates through the result set and count nuber of results.
-		if(rs.next()){
+		while(rs.next()){
 			rowCount++;
 		}//end while
 		stmt.close ();
@@ -300,7 +300,6 @@ public class DBproject{
 	public static void AddDoctor(DBproject esql) {//1
 		try {
 			int rowCount = esql.executeQuery("SELECT * FROM Doctor");
-			rowCount++;
 			
          		String query = "INSERT INTO Doctor VALUES (" + rowCount + ",\'";
 			
