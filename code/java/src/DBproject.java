@@ -309,22 +309,22 @@ public class DBproject{
 			
          		String query = "INSERT INTO Doctor VALUES (" + rowCount + ",\'";
 			
-         		System.out.print("\tEnter name: ");
+         		System.out.print("\tEnter name (MAX: 128 CHAR): ");
          		String input = in.readLine();
          		query += input;
 	 		query += "\',\'";
 
 			if (input.length() > 128) {
-				throw new SQLException("Name is too long");
+				throw new SQLException("Name exceeds CHAR limit");
 			}
 			
-			System.out.print("\tEnter specialty: ");
+			System.out.print("\tEnter specialty (MAX: 24 CHAR): ");
          		input = in.readLine();
          		query += input;
 	 		query += "\',";
 
 			if (input.length() > 24) {
-                                throw new SQLException("Specialty is too long");
+                                throw new SQLException("Specialty exceeds CHAR limit");
                         }
 			
 			System.out.print("\tEnter did: ");
@@ -341,7 +341,7 @@ public class DBproject{
          		System.out.println ("total row(s): " + rowCount);
       		}
 		catch(Exception e) {
-         		System.err.println (e.getMessage());
+         		System.err.println ("ERROR: " + e.getMessage());
        		}
 	}
 
@@ -351,16 +351,16 @@ public class DBproject{
 			
          		String query = "INSERT INTO Patient VALUES (" + rowCount + ",\'";
 			
-         		System.out.print("\tEnter name: ");
+         		System.out.print("\tEnter name (MAX: 128 CHAR): ");
          		String input = in.readLine();
          		query += input;
 	 		query += "\',\'";
 		
 			if (input.length() > 128) {
-                                throw new SQLException("Name is too long");
+                                throw new SQLException("Name exceeds CHAR limit");
                         }
 	
-			System.out.print("\tEnter gender: ");
+			System.out.print("\tEnter gender (M/F): ");
          		input = in.readLine();
 			input = input.toUpperCase();
          		query += input;
@@ -377,13 +377,13 @@ public class DBproject{
 
 			int i = Integer.parseInt(input);
 			
-			System.out.print("\tEnter address: ");
+			System.out.print("\tEnter address (MAX: 256 CHAR): ");
          		input = in.readLine();
          		query += input;
 	 		query += "\',";
 			
 			if (input.length() > 256) {
-                                throw new SQLException("Name is too long");
+                                throw new SQLException("Address exceeds CHAR limit");
                         }
 
 			System.out.print("\tEnter number of appointments: ");
@@ -397,10 +397,10 @@ public class DBproject{
          		System.out.println ("total row(s): " + rowCount);
       		}
 		catch(NumberFormatException e) {
-			System.out.println("Must enter integer");
+			System.out.println("ERROR: Input must be INTEGER");
 		}
 		catch(Exception e) {
-         		System.err.println (e.getMessage());
+         		System.err.println ("ERROR: " + e.getMessage());
        		}
 	}
 
@@ -434,7 +434,7 @@ public class DBproject{
          		System.out.println ("total row(s): " + rowCount);
       		}
 		catch(Exception e) {
-         		System.err.println (e.getMessage());
+         		System.err.println ("ERROR: " + e.getMessage());
        		}
 	}
 
@@ -483,7 +483,7 @@ public class DBproject{
                         System.out.println ("total row(s): " + rowCount);
       		}
 		catch(Exception e) {
-         		System.err.println (e.getMessage());
+         		System.err.println ("ERROR: " + e.getMessage());
        		}
 	}
 
