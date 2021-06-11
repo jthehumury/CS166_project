@@ -174,7 +174,7 @@ public class DBproject{
 		int rowCount = 0;
 
 		//iterates through the result set and count nuber of results.
-		if(rs.next()){
+		while(rs.next()){
 			rowCount++;
 		}//end while
 		stmt.close ();
@@ -306,7 +306,6 @@ public class DBproject{
 	public static void AddDoctor(DBproject esql) {//1
 		try {
 			int rowCount = esql.executeQuery("SELECT * FROM Doctor");
-			rowCount++;
 			
          		String query = "INSERT INTO Doctor VALUES (" + rowCount + ",\'";
 			
@@ -325,10 +324,7 @@ public class DBproject{
          		query += input;
 	 		query += ");";
 
-         		rowCount = esql.executeQuery(query); 
-
-
-
+         		rowCount = esql.executeQuery(query);
          		System.out.println ("total row(s): " + rowCount);
       		}
 		catch(Exception e) {
@@ -338,20 +334,74 @@ public class DBproject{
 
 	public static void AddPatient(DBproject esql) {//2
 		try {
-			int rowCount = esql.executeQuery("SELECT did FROM Doctor;");
-                	System.out.println ("total row(s): " + rowCount);
-		}
+			int rowCount = esql.executeQuery("SELECT * FROM Patient");
+			
+         		String query = "INSERT INTO Patient VALUES (" + rowCount + ",\'";
+			
+         		System.out.print("\tEnter name: ");
+         		String input = in.readLine();
+         		query += input;
+	 		query += "\',\'";
+			
+			System.out.print("\tEnter gender: ");
+         		input = in.readLine();
+         		query += input;
+	 		query += "\',";
+			
+			System.out.print("\tEnter age: ");
+         		input = in.readLine();
+         		query += input;
+	 		query += ",\'";
+			
+			System.out.print("\tEnter address: ");
+         		input = in.readLine();
+         		query += input;
+	 		query += "\',";
+			
+			System.out.print("\tEnter number of appointments: ");
+         		input = in.readLine();
+         		query += input;
+	 		query += ");";
+
+         		rowCount = esql.executeQuery(query);
+         		System.out.println ("total row(s): " + rowCount);
+      		}
 		catch(Exception e) {
-                        System.err.println (e.getMessage());
-                }
+         		System.err.println (e.getMessage());
+       		}
 	}
 
 	public static void AddAppointment(DBproject esql) {//3
+		try {
+			int rowCount = esql.executeQuery("SELECT * FROM Appointment");
+			
+         		String query = "INSERT INTO Appointment VALUES (" + rowCount + ",\'";
+			
+         		System.out.print("\tEnter date: ");
+         		String input = in.readLine();
+         		query += input;
+	 		query += "\',\'";
+			
+			System.out.print("\tEnter timeslot: ");
+         		input = in.readLine();
+         		query += input;
+	 		query += "\',\'";
+			
+			System.out.print("\tEnter status: ");
+         		input = in.readLine();
+         		query += input;
+	 		query += "\');";
+
+         		rowCount = esql.executeQuery(query);
+         		System.out.println ("total row(s): " + rowCount);
+      		}
+		catch(Exception e) {
+         		System.err.println (e.getMessage());
+       		}
 	}
 
 
 	public static void MakeAppointment(DBproject esql) {//4
-		// Given a patient, a doctor and an appointment of the doctor that s/he wants to take, add an appointment to the DB
 		try {
 			int rowCount = esql.executeQuery("SELECT * FROM Appointment");
 			
