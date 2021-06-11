@@ -352,6 +352,32 @@ public class DBproject{
 
 	public static void MakeAppointment(DBproject esql) {//4
 		// Given a patient, a doctor and an appointment of the doctor that s/he wants to take, add an appointment to the DB
+		try {
+			int rowCount = esql.executeQuery("SELECT * FROM Appointment");
+			
+         		String query = "INSERT INTO Appointment VALUES (" + rowCount + ",\'";
+			
+         		System.out.print("\tEnter patient: ");
+         		String input = in.readLine();
+         		query += input;
+	 		query += "\',\'";
+			
+			System.out.print("\tEnter doctor: ");
+         		input = in.readLine();
+         		query += input;
+	 		query += "\',\'";
+			
+			System.out.print("\tEnter appointment: ");
+         		input = in.readLine();
+         		query += input;
+	 		query += "\');";
+
+         		rowCount = esql.executeQuery(query);
+         		System.out.println ("total row(s): " + rowCount);
+      		}
+		catch(Exception e) {
+         		System.err.println (e.getMessage());
+       		}
 	}
 
 	public static void ListAppointmentsOfDoctor(DBproject esql) {//5
