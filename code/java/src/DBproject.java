@@ -307,16 +307,29 @@ public class DBproject{
          		String input = in.readLine();
          		query += input;
 	 		query += "\',\'";
+
+			if (input.length() > 128) {
+				throw new SQLException("Name is too long");
+			}
 			
 			System.out.print("\tEnter specialty: ");
          		input = in.readLine();
          		query += input;
 	 		query += "\',";
+
+			if (input.length() > 24) {
+                                throw new SQLException("Specialty is too long");
+                        }
 			
 			System.out.print("\tEnter did: ");
          		input = in.readLine();
          		query += input;
 	 		query += ");";
+
+			List<List<String>> result = esql.executeQueryAndReturnResult("SELECT * FROM Department WHERE dept_ID = \'" + input + "\';");
+			if (result.isEmpty()) {
+				throw new SQLException("Invalid department");
+			}
 
          		rowCount = esql.executeQuery(query);
          		System.out.println ("total row(s): " + rowCount);
@@ -336,30 +349,50 @@ public class DBproject{
          		String input = in.readLine();
          		query += input;
 	 		query += "\',\'";
-			
+		
+			if (input.length() > 128) {
+                                throw new SQLException("Name is too long");
+                        }
+	
 			System.out.print("\tEnter gender: ");
          		input = in.readLine();
+			input = input.toUpperCase();
          		query += input;
 	 		query += "\',";
+
+			if (!input.equals("M") && !input.equals("F")) {
+				throw new SQLException("Invalid gender");
+			}
 			
 			System.out.print("\tEnter age: ");
          		input = in.readLine();
          		query += input;
 	 		query += ",\'";
+
+			int i = Integer.parseInt(input);
 			
 			System.out.print("\tEnter address: ");
          		input = in.readLine();
          		query += input;
 	 		query += "\',";
 			
+			if (input.length() > 256) {
+                                throw new SQLException("Name is too long");
+                        }
+
 			System.out.print("\tEnter number of appointments: ");
          		input = in.readLine();
          		query += input;
 	 		query += ");";
 
+			i = Integer.parseInt(input);
+
          		rowCount = esql.executeQuery(query);
          		System.out.println ("total row(s): " + rowCount);
       		}
+		catch(NumberFormatException e) {
+			System.out.println("Must enter integer");
+		}
 		catch(Exception e) {
          		System.err.println (e.getMessage());
        		}
@@ -383,8 +416,13 @@ public class DBproject{
 			
 			System.out.print("\tEnter status: ");
          		input = in.readLine();
+			input = input.toUpperCase();
          		query += input;
 	 		query += "\');";
+
+			if (!input.equals("WL") && !input.equals("AV") && !input.equals("AC") && !input.equals("PA")) {
+                                throw new SQLException("Invalid status");
+                        }
 
          		rowCount = esql.executeQuery(query);
          		System.out.println ("total row(s): " + rowCount);
@@ -398,27 +436,46 @@ public class DBproject{
 	public static void MakeAppointment(DBproject esql) {//4
 		// Given a patient, a doctor and an appointment of the doctor that s/he wants to take, add an appointment to the DB
 		try {
-			int rowCount = esql.executeQuery("SELECT * FROM Appointment");
-			
-         		String query = "INSERT INTO Appointment VALUES (" + rowCount + ",\'";
 			
          		System.out.print("\tEnter patient: ");
-         		String input = in.readLine();
-         		query += input;
-	 		query += "\',\'";
+         		String pid = in.readLine();
+
+			List<List<String>> result = esql.executeQueryAndReturnResult("SELECT * FROM Patient WHERE patient_ID = \'" + pid + "\';");
+			if (result.isEmpty()) {
+                                throw new SQLException("Invalid patient");
+                        }	
 			
 			System.out.print("\tEnter doctor: ");
-         		input = in.readLine();
-         		query += input;
-	 		query += "\',\'";
-			
+         		String doct_id = in.readLine();
+			result = esql.executeQueryAndReturnResult("SELECT * FROM Doctor WHERE doctor_ID = \'" + doct_id + "\';");
+                        if (result.isEmpty()) {
+                                throw new SQLException("Invalid doctor");
+                        }
+	
 			System.out.print("\tEnter appointment: ");
-         		input = in.readLine();
-         		query += input;
-	 		query += "\');";
+         		String aid = in.readLine();
+			result = esql.executeQueryAndReturnResult("SELECT * FROM Appointment WHERE appnt_ID = \'" + aid + "\';");
+                        if (result.isEmpty()) {
+                                throw new SQLException("Invalid appointment");
+                        }
 
-         		rowCount = esql.executeQuery(query);
+			result = esql.executeQueryAndReturnResult("SELECT did FROM Doctor WHERE doctor_ID = \'" + doct_id + "\';");
+                        String did = (result.get(0).get(0));
+                        result = esql.executeQueryAndReturnResult("SELECT hid FROM Department WHERE dept_ID = \'" + did + "\';");
+                        String hid = (result.get(0).get(0));
+
+			String query_searches = "INSERT INTO searches VALUES (" + hid + "," + pid + "," + aid + ");";
+                        //String query_schedules = "INSERT INTO schedules VALUES (" + aid + "," + sid + ");";
+                        String query_has_appointment = "INSERT INTO has_appointment VALUES (" + aid + "," + did + ");";
+
+         		int rowCount = esql.executeQuery(query_searches);
          		System.out.println ("total row(s): " + rowCount);
+
+			//rowCount = esql.executeQuery(query_schedules);
+                        //System.out.println ("total row(s): " + rowCount);
+
+			rowCount = esql.executeQuery(query_has_appointment);
+                        System.out.println ("total row(s): " + rowCount);
       		}
 		catch(Exception e) {
          		System.err.println (e.getMessage());
