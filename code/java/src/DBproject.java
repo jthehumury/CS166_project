@@ -469,18 +469,12 @@ public class DBproject{
                         result = esql.executeQueryAndReturnResult("SELECT hid FROM Department WHERE dept_ID = \'" + did + "\';");
                         String hid = (result.get(0).get(0));
 
-			String query_searches = "INSERT INTO searches VALUES (" + hid + "," + pid + "," + aid + ");";
-                        //String query_schedules = "INSERT INTO schedules VALUES (" + aid + "," + sid + ");";
-                        String query_has_appointment = "INSERT INTO has_appointment VALUES (" + aid + "," + did + ");";
+			String query = "INSERT INTO searches VALUES (" + hid + "," + pid + "," + aid + ");";
+                        // query += "INSERT INTO schedules VALUES (" + aid + "," + sid + ");";
+                        query += "INSERT INTO has_appointment VALUES (" + aid + "," + doct_id + ");";
 
-         		int rowCount = esql.executeQuery(query_searches);
+         		int rowCount = esql.executeQuery(query);
          		System.out.println ("total row(s): " + rowCount);
-
-			//rowCount = esql.executeQuery(query_schedules);
-                        //System.out.println ("total row(s): " + rowCount);
-
-			rowCount = esql.executeQuery(query_has_appointment);
-                        System.out.println ("total row(s): " + rowCount);
       		}
 		catch(Exception e) {
          		System.err.println ("ERROR: " + e.getMessage());
