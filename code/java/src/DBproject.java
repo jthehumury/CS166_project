@@ -11,6 +11,12 @@
  */
 
 
+//I import more
+import java.time.LocalDate;
+import java.lang.Object;
+import java.time.format.DateTimeFormatter;
+import java.text.*;
+import java.util.Date;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -168,7 +174,7 @@ public class DBproject{
 		int rowCount = 0;
 
 		//iterates through the result set and count nuber of results.
-		while(rs.next()){
+		if(rs.next()){
 			rowCount++;
 		}//end while
 		stmt.close ();
@@ -300,6 +306,7 @@ public class DBproject{
 	public static void AddDoctor(DBproject esql) {//1
 		try {
 			int rowCount = esql.executeQuery("SELECT * FROM Doctor");
+			rowCount++;
 			
          		String query = "INSERT INTO Doctor VALUES (" + rowCount + ",\'";
 			
@@ -318,7 +325,10 @@ public class DBproject{
          		query += input;
 	 		query += ");";
 
-         		rowCount = esql.executeQuery(query);
+         		rowCount = esql.executeQuery(query); 
+
+
+
          		System.out.println ("total row(s): " + rowCount);
       		}
 		catch(Exception e) {
@@ -328,70 +338,15 @@ public class DBproject{
 
 	public static void AddPatient(DBproject esql) {//2
 		try {
-			int rowCount = esql.executeQuery("SELECT * FROM Patient");
-			
-         		String query = "INSERT INTO Patient VALUES (" + rowCount + ",\'";
-			
-         		System.out.print("\tEnter name: ");
-         		String input = in.readLine();
-         		query += input;
-	 		query += "\',\'";
-			
-			System.out.print("\tEnter gender: ");
-         		input = in.readLine();
-         		query += input;
-	 		query += "\',";
-			
-			System.out.print("\tEnter age: ");
-         		input = in.readLine();
-         		query += input;
-	 		query += ",\'";
-			
-			System.out.print("\tEnter address: ");
-         		input = in.readLine();
-         		query += input;
-	 		query += "\',";
-			
-			System.out.print("\tEnter number of appointments: ");
-         		input = in.readLine();
-         		query += input;
-	 		query += ");";
-
-         		rowCount = esql.executeQuery(query);
-         		System.out.println ("total row(s): " + rowCount);
-      		}
+			int rowCount = esql.executeQuery("SELECT did FROM Doctor;");
+                	System.out.println ("total row(s): " + rowCount);
+		}
 		catch(Exception e) {
-         		System.err.println (e.getMessage());
-       		}
+                        System.err.println (e.getMessage());
+                }
 	}
 
 	public static void AddAppointment(DBproject esql) {//3
-		try {
-			int rowCount = esql.executeQuery("SELECT * FROM Appointment");
-			
-         		String query = "INSERT INTO Appointment VALUES (" + rowCount + ",\'";
-			
-         		System.out.print("\tEnter date: ");
-         		String input = in.readLine();
-         		query += input;
-	 		query += "\',\'";
-			
-			System.out.print("\tEnter timeslot: ");
-         		input = in.readLine();
-         		query += input;
-	 		query += "\',\'";
-			
-			System.out.print("\tEnter status: ");
-         		input = in.readLine();
-         		query += input;
-	 		query += "\');";
-
-         		rowCount = esql.executeQuery(query);
-         		System.out.println ("total row(s): " + rowCount);
-      		}
-		catch(Exception e) {
-         		System.err.println (e.getMessage());
-       		}
 	}
 
 
@@ -401,18 +356,156 @@ public class DBproject{
 
 	public static void ListAppointmentsOfDoctor(DBproject esql) {//5
 		// For a doctor ID and a date range, find the list of active and available appointments of the doctor
+//		try{
+
+		int dID;
+		String startDate;
+		String endDate;
+		Date sDate;
+		Date eDate;
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		SimpleDateFormat sdformat = new SimpleDateFormat("MM/dd/yyyy");
+		while(true) {
+			try {	
+				System.out.println("Enter doctor ID:");
+				dID = Integer.parseInt(in.readLine());
+				if (dID < 0) {
+					throw new RuntimeException("ERROR: Doctor ID can't be less than 0");
+				}
+				break;
+			} catch (Exception e) {
+				System.out.println("ERROR: Invalid input for doctor ID. " + e);
+				continue;
+			}
+		}
+		while(true) {
+			try {
+				System.out.println("Enter starting date(MM/DD/YYYY):");
+				startDate = in.readLine();
+				sDate = sdformat.parse(startDate);
+				LocalDate localadd = LocalDate.parse(startDate, format);
+				break;
+			} catch (Exception e) {
+				System.out.println("ERROR: Invalid input for starting date. " + e);
+				continue;
+			}
+		}
+		while(true) {
+			try {
+				System.out.println("Enter ending date(MM/DD/YYYY):");
+				endDate = in.readLine();
+				eDate = sdformat.parse(endDate);
+				LocalDate localaad = LocalDate.parse(endDate, format);
+				if(eDate.compareTo(sDate) < 0) {
+					throw new RuntimeException("ERROR: Ending date can't be less than starting date");
+				}
+				
+				break;
+			} catch (Exception e) {
+				System.out.println("ERROR: Invalid input for ending date. " + e);
+				continue;
+			}
+		}
+			try {
+				String query = "SELECT D.name, D.doctor_ID, A.appnt_ID, A.adate, A.time_slot, A.status FROM Appointment A, Doctor D, has_appointment HA WHERE HA.appt_id = A.appnt_ID AND (A.status = 'AC' OR A.status = 'AV') AND HA.doctor_id = D.doctor_ID AND D.doctor_ID = ";
+	                        query += dID + " AND A.adate >= \'";
+				query += startDate + "\' AND A.adate <= \'";
+				query += endDate + "\';";
+
+				
+				
+				esql.executeQueryAndPrintResult(query);
+			} catch (Exception e) {
+				System.out.println("ERROR: Query failed to execute. " + e);
+			}
+			
+/*		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}*/
 	}
 
 	public static void ListAvailableAppointmentsOfDepartment(DBproject esql) {//6
 		// For a department name and a specific date, find the list of available appointments of the department
+		
+
+		String deptName;
+		String Date;	
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");	
+
+
+                        String query = "SELECT A.appnt_ID, A.adate, A.time_slot, A.status FROM Appointment A, Doctor D, has_appointment HA, Department DE  WHERE HA.appt_id = A.appnt_ID AND HA.doctor_id = D.doctor_ID AND D.did = DE.dept_ID AND A.status = 'AV' AND DE.name = '";
+		while(true) {
+                        try {
+                                System.out.println("Enter department name:");
+				deptName = in.readLine();
+                                break;
+                        } catch (Exception e) {
+                                System.out.println("ERROR: Invalid input for department Name. " + e);
+                                continue;
+                        }
+                }
+                while(true) {
+                        try {
+                                System.out.println("Enter date(MM/DD/YYYY):");
+                                Date = in.readLine();
+                                LocalDate localadd = LocalDate.parse(Date, format);
+                                break;
+                        } catch (Exception e) {
+                                System.out.println("ERROR: Invalid input for date. " + e);
+                                continue;
+                        }
+                }
+
+		try {
+			query += deptName + "' AND A.adate = '";
+                        query += Date + "\';";
+                        esql.executeQueryAndPrintResult(query);
+		} catch (Exception e) {
+			System.out.println("ERROR: Query failed to execute. " + e);
+		}
+
+
 	}
 
 	public static void ListStatusNumberOfAppointmentsPerDoctor(DBproject esql) {//7
 		// Count number of different types of appointments per doctors and list them in descending order
+		try { 
+			String query = "SELECT D.doctor_ID, D.name, A.status, COUNT(*) FROM Appointment A, Doctor D, has_appointment HA WHERE HA.appt_id = A.appnt_ID AND HA.doctor_id = D.doctor_ID GROUP BY D.doctor_ID, D.name, A.status ORDER BY COUNT(*) DESC;";
+
+			esql.executeQueryAndPrintResult(query);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+
 	}
 
 	
 	public static void FindPatientsCountWithStatus(DBproject esql) {//8
 		// Find how many patients per doctor there are with a given status (i.e. PA, AC, AV, WL) and list that number per doctor.
+		String status;
+		String PA = "PA";
+		String AC = "AC";
+		String AV = "AV";
+		String WL = "WL";
+		while(true) {			
+			try {
+                	        System.out.println("Enter status(PA, AC, AV, WL):");
+                        	status = in.readLine();
+				if(status.equals(PA) || status.equals(AC) || status.equals(AV) || status.equals(WL)) {
+					break;
+				}
+				throw new RuntimeException("Please type PA, AC, AV, or WL");				
+			} catch (Exception e) {
+				System.out.println("ERROR: Invalid input for status. " + e);
+			}
+		}
+			try {
+				String query = "SELECT DISTINCT D.doctor_ID, D.name, COUNT(P.patient_ID) FROM Appointment A, Doctor D, has_appointment HA, Patient P, searches S WHERE HA.appt_id = A.appnt_ID AND HA.doctor_id = D.doctor_ID AND S.pid = P.patient_ID AND S.aid = A.appnt_ID AND A.status = '";			
+                        	query += status + "' GROUP BY D.doctor_ID, D.name;";
+	                        esql.executeQueryAndPrintResult(query);
+			} catch (Exception e) {
+				System.out.println("ERROR: Query failed to execute. " + e);
+			}
 	}
 }
