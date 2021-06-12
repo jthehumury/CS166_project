@@ -305,6 +305,7 @@ public class DBproject{
 
 	public static void AddDoctor(DBproject esql) {//1
 		try {
+
 			int rowCount = esql.executeQuery("SELECT * FROM Doctor");
 			
          		String query = "INSERT INTO Doctor VALUES (" + rowCount + ",\'";
@@ -335,10 +336,9 @@ public class DBproject{
 			List<List<String>> result = esql.executeQueryAndReturnResult("SELECT * FROM Department WHERE dept_ID = \'" + input + "\';");
 			if (result.isEmpty()) {
 				throw new SQLException("Invalid department");
-			}
+			}		
 
-         		rowCount = esql.executeQuery(query);
-         		System.out.println ("total row(s): " + rowCount);
+         		esql.executeUpdate(query);
       		}
 		catch(Exception e) {
          		System.err.println ("ERROR: " + e.getMessage());
@@ -393,8 +393,7 @@ public class DBproject{
 
 			i = Integer.parseInt(input);
 
-         		rowCount = esql.executeQuery(query);
-         		System.out.println ("total row(s): " + rowCount);
+			esql.executeUpdate(query);
       		}
 		catch(NumberFormatException e) {
 			System.out.println("ERROR: Input must be INTEGER");
@@ -430,8 +429,7 @@ public class DBproject{
                                 throw new SQLException("Invalid status");
                         }
 
-         		rowCount = esql.executeQuery(query);
-         		System.out.println ("total row(s): " + rowCount);
+         		esql.executeUpdate(query);
       		}
 		catch(Exception e) {
          		System.err.println ("ERROR: " + e.getMessage());
@@ -442,13 +440,45 @@ public class DBproject{
 	public static void MakeAppointment(DBproject esql) {//4
 		try {
 			
-         		System.out.print("\tEnter patient: ");
-         		String pid = in.readLine();
+         		System.out.print("\tEnter patient name: ");
+         		String pname = in.readLine();
 
-			List<List<String>> result = esql.executeQueryAndReturnResult("SELECT * FROM Patient WHERE patient_ID = \'" + pid + "\';");
+			if (pname.length() > 128) {
+                                throw new SQLException("Name exceeds CHAR limit");
+                        }
+
+			System.out.print("\tEnter patient gender: ");
+                        String pgender = in.readLine();
+			pgender = pgender.toUpperCase();
+
+			if (!pgender.equals("M") && !pgender.equals("F")) {
+                                throw new SQLException("Invalid gender");
+                        }
+
+			System.out.print("\tEnter patient age: ");
+                        String page = in.readLine();
+			
+			int i = Integer.parseInt(page);
+	
+			System.out.print("\tEnter patient address: ");
+                        String paddress = in.readLine();
+
+			if (paddress.length() > 256) {
+                                throw new SQLException("Address exceeds CHAR limit");
+                        }
+
+			List<List<String>> result = esql.executeQueryAndReturnResult("SELECT patient_ID FROM Patient WHERE name=\'" + pname + "\' AND gtype=\'" + pgender + "\' AND age=" + page + " AND address=\'" + paddress + "\';");
+			
+			int p_id = esql.executeQuery("SELECT * FROM Patient");
+			String pid = "" + p_id + "";
+
 			if (result.isEmpty()) {
-                                throw new SQLException("Invalid patient");
-                        }	
+				String new_patient = "INSERT INTO Patient VALUES (" + p_id + ",\'" + pname + "\',\'" + pgender + "\'," + page + ",\'" + paddress + "\',0);";
+                       		esql.executeUpdate(new_patient);
+                        }
+			else {
+				pid = result.get(0).get(0);
+			}
 			
 			System.out.print("\tEnter doctor: ");
          		String doct_id = in.readLine();
@@ -468,14 +498,33 @@ public class DBproject{
                         String did = (result.get(0).get(0));
                         result = esql.executeQueryAndReturnResult("SELECT hid FROM Department WHERE dept_ID = \'" + did + "\';");
                         String hid = (result.get(0).get(0));
+	
+			result = esql.executeQueryAndReturnResult("SELECT status FROM Appointment WHERE appnt_ID = \'" + aid + "\';");
+			String str = result.get(0).get(0);
+			if (str.equals("AV")) {
+				String query = "UPDATE Appointment SET status = \'AC\' WHERE appnt_ID=" + aid + ";";
+				System.out.println("Appointment status: " + str + " -> AC");
+			}
+			else if (str.equals("AC")) {
+				String query = "UPDATE Appointment SET status = \'WL\' WHERE appnt_ID=" + aid + ";";
+                                System.out.println("Appointment status: " + str + " -> WL");
+			}
+			else {
+				System.out.println("Appointment status: " + str);
+			}
 
-			String query = "INSERT INTO searches VALUES (" + hid + "," + pid + "," + aid + ");";
-                        // query += "INSERT INTO schedules VALUES (" + aid + "," + sid + ");";
-                        query += "INSERT INTO has_appointment VALUES (" + aid + "," + doct_id + ");";
+			if (!str.equals("PA")) {
 
-         		int rowCount = esql.executeQuery(query);
-         		System.out.println ("total row(s): " + rowCount);
+				String query = "INSERT INTO searches VALUES (" + hid + "," + pid + "," + aid + ");";
+                        	// query += "INSERT INTO schedules VALUES (" + aid + "," + sid + ");";
+                        	query += "INSERT INTO has_appointment VALUES (" + aid + "," + doct_id + ");";
+
+         			esql.executeUpdate(query);
+			}
       		}
+		catch(NumberFormatException e) {
+                        System.out.println("ERROR: Input must be INTEGER");
+                }
 		catch(Exception e) {
          		System.err.println ("ERROR: " + e.getMessage());
        		}
