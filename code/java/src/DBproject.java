@@ -406,17 +406,21 @@ public class DBproject{
 
 	public static void AddAppointment(DBproject esql) {//3
 		try {
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");	
+			
 			int rowCount = esql.executeQuery("SELECT * FROM Appointment");
 			
          		String query = "INSERT INTO Appointment VALUES (" + rowCount + ",\'";
 			
          		System.out.print("\tEnter date: ");
          		String input = in.readLine();
+			LocalDate localadd = LocalDate.parse(input, format);
          		query += input;
 	 		query += "\',\'";
 			
 			System.out.print("\tEnter timeslot: ");
          		input = in.readLine();
+			Date date1 = new SimpleDateFormat("HH:mm-HH:mm").parse(input);
          		query += input;
 	 		query += "\',\'";
 			
