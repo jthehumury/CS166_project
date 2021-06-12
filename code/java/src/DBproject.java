@@ -514,12 +514,21 @@ public class DBproject{
 			}
 
 			if (!str.equals("PA")) {
-
+				
 				String query = "INSERT INTO searches VALUES (" + hid + "," + pid + "," + aid + ");";
                         	// query += "INSERT INTO schedules VALUES (" + aid + "," + sid + ");";
                         	query += "INSERT INTO has_appointment VALUES (" + aid + "," + doct_id + ");";
 
          			esql.executeUpdate(query);
+
+				query = "SELECT number_of_appts FROM Patient WHERE patient_ID=" + pid + ";";
+				result = esql.executeQueryAndReturnResult(query);
+				str = result.get(0).get(0);
+				int num_appt = Integer.parseInt(str);
+				num_appt++;
+				query = "UPDATE Patient SET number_of_appts=" + num_appt + " WHERE patient_ID=" + pid + ";";
+				
+				esql.executeUpdate(query);
 			}
       		}
 		catch(NumberFormatException e) {
